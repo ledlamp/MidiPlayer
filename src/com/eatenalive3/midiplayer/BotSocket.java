@@ -2,15 +2,28 @@ package com.eatenalive3.midiplayer;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.enums.ReadyState;
 import org.java_websocket.handshake.ServerHandshake;
 
 public class BotSocket extends WebSocketClient {
 	static long serverTimeOffset = 0;
 	
+	private static Map<String, String> headers() {
+		Random r = new Random();
+		Map<String, String> h = new HashMap<String, String>();
+		h.put("User-Agent", "MidiPlayer");
+		String randomIP = Integer.toString(r.nextInt(256)) + '.' + Integer.toString(r.nextInt(256)) + '.' + Integer.toString(r.nextInt(256)) + '.' + Integer.toString(r.nextInt(256));
+		h.put("X-Forwarded-For", randomIP);
+		return h;
+	}
+	
 	public BotSocket(String roomName) throws URISyntaxException {
-		super(new URI("ws://www.multiplayerpiano.com"));
+		super(new URI("wss://game.multiplayerpiano.com"), headers());
 
 		System.out.println("before connect");
 
@@ -18,7 +31,7 @@ public class BotSocket extends WebSocketClient {
 
 		Play.socket = this;
 
-		while (!isOpen()) {
+		while (getReadyState() == ReadyState.NOT_YET_CONNECTED) {
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
