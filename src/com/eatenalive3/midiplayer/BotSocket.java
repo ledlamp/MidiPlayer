@@ -12,6 +12,7 @@ import org.java_websocket.handshake.ServerHandshake;
 
 public class BotSocket extends WebSocketClient {
 	static long serverTimeOffset = 0;
+	private String _roomName;
 	
 	private static Map<String, String> headers() {
 		Random r = new Random();
@@ -24,7 +25,8 @@ public class BotSocket extends WebSocketClient {
 	
 	public BotSocket(String roomName) throws URISyntaxException {
 		super(new URI("wss://game.multiplayerpiano.com"), headers());
-
+		_roomName = roomName;
+		
 		System.out.println("before connect");
 
 		connect();
@@ -54,8 +56,6 @@ public class BotSocket extends WebSocketClient {
 		}).start();
 
 		send("[{\"m\":\"hi\"}]");
-		send("[{\"m\":\"m\",\"x\":0,\"y\":0}]");
-		send("[{\"m\":\"ch\",\"_id\":\"" + roomName + "\"}]");
 	}
 
 	@Override
@@ -66,6 +66,10 @@ public class BotSocket extends WebSocketClient {
 
 	@Override
 	public void onMessage(String message) {
+		if (message.contains("\"m\":\"hi\"")) {
+			send("[{\"m\":\"ch\",\"_id\":\"" + _roomName + "\"}]");
+			send("[{\"m\":\"userset\",\"set\":{\"name\":\"MidiPlayer\"}}]");
+		}
 		if (message.contains("m\":\"t")) {
 			String t = message.substring(message.indexOf("t\":")+3);
 			String e = t.substring(t.indexOf("e\":")+3);
