@@ -92,7 +92,7 @@ public class MidiPlayer {
 
 		gui.setUpGUI();
 
-		console.setText("MidiPlayer BETA v1.1 started. Coded by Boss :P");
+		console.setText("MidiPlayer BETA v2023.10.10 (jacolantern edition) started. Coded by Boss :P");
 		log("Remember to connect to a room first!");
 
 	}
